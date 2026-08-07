@@ -672,7 +672,7 @@ def depth_im_to_dist_im(depth_im, K):
 
 def norm_depth(depth, valid_start=0.2, valid_end=1.0):
     mask = depth > 0
-    depth_n = depth.astype(np.float)
+    depth_n = depth.astype(float)
     depth_n[mask] -= depth_n[mask].min()
     depth_n[mask] /= depth_n[mask].max() / (valid_end - valid_start)
     depth_n[mask] += valid_start
@@ -738,26 +738,26 @@ def calc_2d_bbox_xyxy_v2(xs, ys, width=640, height=480, clip=False):
 
 # def calc_pose_2d_bbox_old(model, im_size, K, R_m2c, t_m2c):
 #     pts_im = project_pts(model["pts"], K, R_m2c, t_m2c)
-#     pts_im = np.round(pts_im).astype(np.int)
+#     pts_im = np.round(pts_im).astype(int)
 #     return calc_2d_bbox(pts_im[:, 0], pts_im[:, 1], im_size)
 
 
 def calc_pose_2d_bbox_xywh(points, width, height, K, R_m2c, t_m2c):
     pts_im = project_pts(points, K, R_m2c, t_m2c)
-    # pts_im = np.round(pts_im).astype(np.int)
+    # pts_im = np.round(pts_im).astype(int)
     return calc_2d_bbox_xywh(pts_im[:, 0], pts_im[:, 1], width, height)
 
 
 def calc_pose_2d_bbox_xyxy(points, width, height, K, R_m2c, t_m2c):
     pts_im = project_pts(points, K, R_m2c, t_m2c)
-    # pts_im = np.round(pts_im).astype(np.int)
+    # pts_im = np.round(pts_im).astype(int)
     return calc_2d_bbox_xyxy(pts_im[:, 0], pts_im[:, 1], width, height)
 
 
 def calc_pose_2d_bbox_xyxy_v2(points, width, height, K, R_m2c, t_m2c):
     """br is excluded."""
     pts_im = project_pts(points, K, R_m2c, t_m2c)
-    # pts_im = np.round(pts_im).astype(np.int)
+    # pts_im = np.round(pts_im).astype(int)
     return calc_2d_bbox_xyxy_v2(pts_im[:, 0], pts_im[:, 1], width, height)
 
 
@@ -948,7 +948,7 @@ def paste_emb_to_im_batch(embs, bboxes_xyxy, height=480, width=640):
         if src is None:
             tgt_embs[i] = None
             continue
-        x1, y1, x2, y2 = bboxes_xyxy[i, :4].astype(np.int)
+        x1, y1, x2, y2 = bboxes_xyxy[i, :4].astype(int)
         tgt_embs[i][y1 : y2 + 1, x1 : x2 + 1] = src
     return tgt_embs
 
@@ -1439,8 +1439,8 @@ def ply_vtx_color_expand(model):
 
         ptsExpand.append(1 / 3.0 * (pts[int(face[0])] + pts[int(face[1])] + pts[int(face[2])]))
         colorsExpand.append(1 / 3.0 * (colors[int(face[0])] + colors[int(face[1])] + colors[int(face[2])]))
-    ptsExpand = np.array(ptsExpand, dtype=np.float)
-    colorsExpand = np.array(colorsExpand, dtype=np.float)
+    ptsExpand = np.array(ptsExpand, dtype=float)
+    colorsExpand = np.array(colorsExpand, dtype=float)
     pts_expand = np.concatenate((pts, ptsExpand), axis=0)
     colors_expand = np.concatenate((colors, colorsExpand), axis=0)
     model["pts_expand"] = pts_expand

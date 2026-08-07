@@ -86,7 +86,7 @@ def heatmap(input, min=None, max=None, to_255=False, to_rgb=False, colormap=cv2.
 
 def vis_bbox_opencv(img, bbox, thick=1, fmt="xywh", bbox_color="green"):
     """Visualizes a bounding box."""
-    bbox = np.array(bbox + 0.5).astype(np.int)
+    bbox = np.array(bbox + 0.5).astype(int)
     if fmt == "xywh":
         (x1, y1, w, h) = bbox
         x1, y1 = int(x1), int(y1)
@@ -105,7 +105,7 @@ def vis_image_mask_cv2(img, mask, color=None):
     else:
         color_mask = np.array(color_val(color), dtype=np.uint8)
         # print(color_mask, type(color_mask))
-    mask = mask.astype(np.bool)
+    mask = mask.astype(bool)
     img_show = img.copy()
     img_show[mask] = img_show[mask] * 0.5 + color_mask * 0.5
     return img_show
@@ -121,7 +121,7 @@ def vis_image_mask_bbox_cv2(
     img_show = img.copy()
     for i, mask in enumerate(masks):
         color_mask = np.random.randint(0, 256, (1, 3), dtype=np.uint8)
-        mask = mask.astype(np.bool)
+        mask = mask.astype(bool)
         img_show[mask] = img_show[mask] * 0.5 + color_mask * 0.5
         if bboxes is None:
             x1, y1, x2, y2 = mask2bbox_xyxy(mask)

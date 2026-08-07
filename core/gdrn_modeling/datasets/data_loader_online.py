@@ -400,7 +400,7 @@ class GDRN_Online_DatasetFromList(Base_DatasetFromList):
 
         if self.with_depth:
             if do_replace_bg and self.with_bg_depth:
-                mask_bg_depth = (~mask_trunc).astype(np.bool)
+                mask_bg_depth = (~mask_trunc).astype(bool)
                 depth[mask_bg_depth] = bg_depth[mask_bg_depth]
 
             if self.aug_depth:  # randomly fill 0 points

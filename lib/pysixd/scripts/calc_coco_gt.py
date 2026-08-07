@@ -78,7 +78,7 @@ for scene_id in dp_split["scene_ids"]:
             category_info = inst["obj_id"]
 
             mask_p = os.path.join(mask_paths, "{:06d}_{:06d}.png".format(im_id, idx))
-            binary_inst_mask = (inout.load_depth(mask_p) / 255.0).astype(np.bool)
+            binary_inst_mask = (inout.load_depth(mask_p) / 255.0).astype(bool)
 
             annotation_info = pycoco_utils.create_annotation_info(
                 segmentation_id, image_id, category_info, binary_inst_mask, tolerance=2

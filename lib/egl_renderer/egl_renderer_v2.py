@@ -927,7 +927,7 @@ class EGLRenderer(object):
                 GL.GL_LINES,
                 160,
                 GL.GL_UNSIGNED_INT,
-                np.arange(160, dtype=np.int),
+                np.arange(160, dtype=int),
             )
             GL.glBindVertexArray(0)
             GL.glUseProgram(0)

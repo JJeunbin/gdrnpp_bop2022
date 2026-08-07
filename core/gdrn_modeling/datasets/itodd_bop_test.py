@@ -93,6 +93,7 @@ class ITODD_BOP_TEST_Dataset(object):
 
         if osp.exists(cache_path) and self.use_cache:
             logger.info("load cached dataset dicts from {}".format(cache_path))
+            # return mmcv.load(cache_path)[:5]  # DEBUG: limit to 5
             return mmcv.load(cache_path)
 
         t_start = time.perf_counter()

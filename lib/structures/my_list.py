@@ -16,7 +16,7 @@ class MyList(list):
             else:
                 return [self[int(i)] for i in index]
         elif isinstance(index, np.ndarray):
-            if index.dtype == np.bool:
+            if index.dtype == bool:
                 return [self[i] for i, idx in enumerate(index) if idx]
             else:
                 return [self[int(i)] for i in index]
