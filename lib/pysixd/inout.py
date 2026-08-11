@@ -608,9 +608,21 @@ def load_ply(path, vertex_scale=1.0):
     # Formats for the binary case.
     formats = {
         "float": ("f", 4),
+        "float32": ("f", 4),
         "double": ("d", 8),
+        "float64": ("d", 8),
         "int": ("i", 4),
+        "int32": ("i", 4),
+        "uint": ("I", 4),
+        "uint32": ("I", 4),
+        "short": ("h", 2),
+        "int16": ("h", 2),
+        "ushort": ("H", 2),
+        "uint16": ("H", 2),
         "uchar": ("B", 1),
+        "uint8": ("B", 1),
+        "char": ("b", 1),
+        "int8": ("b", 1),
     }
 
     # Load vertices.

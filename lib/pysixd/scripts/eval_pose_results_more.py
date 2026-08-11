@@ -56,6 +56,7 @@ p = {
                 "tyol": 15,
                 "ycbv": 15,
                 "hope": 15,
+                "z_bracket": 15,
             },
             "vsd_taus": list(np.arange(0.05, 0.51, 0.05)),
             "vsd_normalized_by_diameter": True,
@@ -234,7 +235,9 @@ for result_filename in p["result_filenames"]:
     # Name of the result and the dataset.
     result_name = os.path.splitext(os.path.basename(result_filename))[0]
     if args.dataset == None:
-        dataset = str(result_name.split("_")[1].split("-")[0])
+        # split only on the first "_": dataset names may contain underscores too
+        # (e.g. "z_bracket"), which would otherwise get mistaken for extra fields.
+        dataset = str(result_name.split("_", 1)[1].split("-")[0])
     else:
         dataset = args.dataset
 

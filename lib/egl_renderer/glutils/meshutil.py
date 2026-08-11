@@ -267,6 +267,10 @@ def load_mesh_pyassimp(
     scene = pyassimp.load(
         model_path
     )  # ,processing=pyassimp.postprocess.aiProcess_GenUVCoords | pyassimp.postprocess.aiProcess_Triangulate)  # load collada
+    if hasattr(scene, "__enter__"):
+        # newer pyassimp (>=4.x) turned load() into a contextmanager; enter it manually
+        # and keep the scene alive (skip release()) since callers use it afterwards.
+        scene = scene.__enter__()
     mesh = scene.meshes[0]
     # pprint(vars(mesh))
     print(mesh.__dict__.keys())
@@ -340,7 +344,11 @@ def load_mesh_pyassimp(
         is_cad = False
     result["is_cad"] = is_cad
 
-    pyassimp.release(scene)
+    # NOTE: skip pyassimp.release(scene) here -- on pyassimp>=4.x (contextmanager-based
+    # load()) it segfaults on some builds/architectures (ctypes struct freeing issue).
+    # All needed data has already been copied into `result` (plain numpy/python types)
+    # above, so leaking the underlying C++ assimp scene is harmless for our one-shot
+    # model loading at renderer startup.
     # if model_path.endswith('.obj'):
     #     ply_path = model_path.replace('.obj', '.ply')
     #     if osp.exists(ply_path):

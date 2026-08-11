@@ -10,7 +10,6 @@ import pyassimp.postprocess
 
 # import optimesh
 import scipy
-from meshplex import MeshTri
 from plyfile import PlyData, PlyElement
 from scipy.spatial.distance import pdist
 from skimage import measure
@@ -333,6 +332,8 @@ class Model3D:
                 iprint("Loading {} without any colors!!".format(filename))
 
     def _smooth_laplacian(self, vertices, faces, iterations):
+        from meshplex import MeshTri  # lazy: only needed here, and recent meshplex needs a paid license
+
         mesh = MeshTri(vertices, faces)
         # move interior points into average of their neighbors
         num_neighbors = np.zeros(len(mesh.node_coords), dtype=int)

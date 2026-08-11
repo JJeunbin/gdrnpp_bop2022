@@ -27,6 +27,8 @@ from core.gdrn_modeling.datasets import (
     itodd_pbr,
     itodd_bop_test,
     itodd_d2,
+    z_bracket_pbr,
+    z_bracket_bop_test,
 )
 
 
@@ -58,6 +60,8 @@ _DSET_MOD_NAMES = [
     "itodd_pbr",
     "itodd_bop_test",
     "itodd_d2",
+    "z_bracket_pbr",
+    "z_bracket_bop_test",
 ]
 
 logger = logging.getLogger(__name__)

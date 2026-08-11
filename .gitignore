@@ -30,6 +30,7 @@ dist/
 *dlaf*
 # pytorch/python/numpy formats
 *.pth
+*.pt
 *.pkl
 *.npy
 *.engine
@@ -54,5 +55,8 @@ events.out.tfevents*
 
 # project dirs
 /models
+
+# orphaned pybind11 backup (unreferenced by any build script, ~2.8M of vendored source)
+/lib/egl_renderer/pybind11_old/
 
 #external/*

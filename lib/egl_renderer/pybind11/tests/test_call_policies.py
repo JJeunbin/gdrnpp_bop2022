@@ -1,8 +1,11 @@
 import pytest
-from pybind11_tests import call_policies as m
+
+import env  # noqa: F401
 from pybind11_tests import ConstructorStats
+from pybind11_tests import call_policies as m
 
 
+@pytest.mark.xfail("env.PYPY", reason="sometimes comes out 1 off on PyPy", strict=False)
 def test_keep_alive_argument(capture):
     n_inst = ConstructorStats.detail_reg_inst()
     with capture:
@@ -40,6 +43,19 @@ def test_keep_alive_argument(capture):
         Releasing child.
     """
     )
+
+    p = m.Parent()
+    c = m.Child()
+    assert ConstructorStats.detail_reg_inst() == n_inst + 2
+    m.free_function(p, c)
+    del c
+    assert ConstructorStats.detail_reg_inst() == n_inst + 2
+    del p
+    assert ConstructorStats.detail_reg_inst() == n_inst
+
+    with pytest.raises(RuntimeError) as excinfo:
+        m.invalid_arg_index()
+    assert str(excinfo.value) == "Could not activate keep_alive!"
 
 
 def test_keep_alive_return_value(capture):
@@ -80,9 +96,26 @@ def test_keep_alive_return_value(capture):
     """
     )
 
+    p = m.Parent()
+    assert ConstructorStats.detail_reg_inst() == n_inst + 1
+    with capture:
+        m.Parent.staticFunction(p)
+        assert ConstructorStats.detail_reg_inst() == n_inst + 2
+    assert capture == "Allocating child."
+    with capture:
+        del p
+        assert ConstructorStats.detail_reg_inst() == n_inst
+    assert (
+        capture
+        == """
+        Releasing parent.
+        Releasing child.
+    """
+    )
 
-# https://bitbucket.org/pypy/pypy/issues/2447
-@pytest.unsupported_on_pypy
+
+# https://foss.heptapod.net/pypy/pypy/-/issues/2447
+@pytest.mark.xfail("env.PYPY", reason="_PyObject_GetDictPtr is unimplemented")
 def test_alive_gc(capture):
     n_inst = ConstructorStats.detail_reg_inst()
     p = m.ParentGC()

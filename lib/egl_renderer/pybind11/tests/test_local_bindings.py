@@ -1,11 +1,11 @@
 import pytest
 
+import env  # noqa: F401
 from pybind11_tests import local_bindings as m
 
 
 def test_load_external():
-    """Load a `py::module_local` type that's only registered in an external
-    module."""
+    """Load a `py::module_local` type that's only registered in an external module"""
     import pybind11_cross_module_tests as cm
 
     assert m.load_external1(cm.ExternalType1(11)) == 11
@@ -21,8 +21,7 @@ def test_load_external():
 
 
 def test_local_bindings():
-    """Tests that duplicate `py::module_local` class bindings work across
-    modules."""
+    """Tests that duplicate `py::module_local` class bindings work across modules"""
 
     # Make sure we can load the second module with the conflicting (but local) definition:
     import pybind11_cross_module_tests as cm
@@ -49,18 +48,18 @@ def test_local_bindings():
 
 
 def test_nonlocal_failure():
-    """Tests that attempting to register a non-local type in multiple modules
-    fails."""
+    """Tests that attempting to register a non-local type in multiple modules fails"""
     import pybind11_cross_module_tests as cm
 
     with pytest.raises(RuntimeError) as excinfo:
         cm.register_nonlocal()
-    assert str(excinfo.value) == 'generic_type: type "NonLocalType" is already registered!'
+    assert (
+        str(excinfo.value) == 'generic_type: type "NonLocalType" is already registered!'
+    )
 
 
 def test_duplicate_local():
-    """Tests expected failure when registering a class twice with py::local in
-    the same module."""
+    """Tests expected failure when registering a class twice with py::local in the same module"""
     with pytest.raises(RuntimeError) as excinfo:
         m.register_local_external()
     import pybind11_tests
@@ -111,24 +110,27 @@ def test_stl_bind_global():
 
     with pytest.raises(RuntimeError) as excinfo:
         cm.register_nonlocal_map()
-    assert str(excinfo.value) == 'generic_type: type "NonLocalMap" is already registered!'
+    assert (
+        str(excinfo.value) == 'generic_type: type "NonLocalMap" is already registered!'
+    )
 
     with pytest.raises(RuntimeError) as excinfo:
         cm.register_nonlocal_vec()
-    assert str(excinfo.value) == 'generic_type: type "NonLocalVec" is already registered!'
+    assert (
+        str(excinfo.value) == 'generic_type: type "NonLocalVec" is already registered!'
+    )
 
     with pytest.raises(RuntimeError) as excinfo:
         cm.register_nonlocal_map2()
-    assert str(excinfo.value) == 'generic_type: type "NonLocalMap2" is already registered!'
+    assert (
+        str(excinfo.value) == 'generic_type: type "NonLocalMap2" is already registered!'
+    )
 
 
 def test_mixed_local_global():
-    """Local types take precedence over globally registered types: a module
-    with a `module_local` type can be registered even if the type is already
-    registered globally.
-
-    With the module, casting will go to the local type; outside the
-    module casting goes to the global type.
+    """Local types take precedence over globally registered types: a module with a `module_local`
+    type can be registered even if the type is already registered globally.  With the module,
+    casting will go to the local type; outside the module casting goes to the global type.
     """
     import pybind11_cross_module_tests as cm
 
@@ -171,17 +173,16 @@ def test_mixed_local_global():
 
 
 def test_internal_locals_differ():
-    """Makes sure the internal local type map differs across the two
-    modules."""
+    """Makes sure the internal local type map differs across the two modules"""
     import pybind11_cross_module_tests as cm
 
     assert m.local_cpp_types_addr() != cm.local_cpp_types_addr()
 
 
+@pytest.mark.xfail("env.PYPY and sys.pypy_version_info < (7, 3, 2)")
 def test_stl_caster_vs_stl_bind(msg):
-    """One module uses a generic vector caster from `<pybind11/stl.h>` while
-    the other exports `std::vector<int>` via `py:bind_vector` and
-    `py::module_local`"""
+    """One module uses a generic vector caster from `<pybind11/stl.h>` while the other
+    exports `std::vector<int>` via `py:bind_vector` and `py::module_local`"""
     import pybind11_cross_module_tests as cm
 
     v1 = cm.VectorInt([1, 2, 3])
@@ -191,7 +192,7 @@ def test_stl_caster_vs_stl_bind(msg):
     v2 = [1, 2, 3]
     assert m.load_vector_via_caster(v2) == 6
     with pytest.raises(TypeError) as excinfo:
-        cm.load_vector_via_binding(v2) == 6
+        cm.load_vector_via_binding(v2)
     assert (
         msg(excinfo.value)
         == """
@@ -200,7 +201,7 @@ def test_stl_caster_vs_stl_bind(msg):
 
     Invoked with: [1, 2, 3]
     """
-    )  # noqa: E501 line too long
+    )
 
 
 def test_cross_module_calls():

@@ -91,6 +91,7 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
         "ycbv": list(range(1, 22)),
         "ycbvposecnn": list(range(1, 22)),
         "hope": list(range(1, 29)),
+        "z_bracket": [1],
     }[dataset_name]
 
     # ID's of objects with ambiguous views evaluated using the ADI pose error
@@ -129,6 +130,7 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
         "ycbv": [1, 13, 14, 16, 18, 19, 20, 21],  # bop symmetric objs
         "ycbvposecnn": [13, 16, 19, 20, 21],  # posecnn symmetric objs
         "hope": None,  # Not defined yet.
+        "z_bracket": [],  # asymmetric
     }[dataset_name]
 
     # T-LESS includes two types of object models, CAD and reconstructed.
@@ -191,8 +193,9 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
     gray_ext = ".png"
     depth_ext = ".png"
 
-    if split_type == "pbr":
+    if split_type == "pbr" or dataset_name == "z_bracket":
         # The photorealistic synthetic images are provided in the JPG format.
+        # (z_bracket's BlenderProc renders -- both train_pbr and test -- are JPG too)
         rgb_ext = ".jpg"
     elif dataset_name == "itodd":
         gray_ext = ".tif"
@@ -323,6 +326,12 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
             p["depth_range"] = (638.38, 775.97)
             p["azimuth_range"] = (0, 2 * math.pi)
             p["elev_range"] = (-0.5 * math.pi, 0.5 * math.pi)
+
+    # z_bracket (custom, BlenderProc-generated).
+    elif dataset_name == "z_bracket":
+        # held-out synthetic scene(s) (never in train_pbr) used for internal ADD scoring
+        p["scene_ids"] = {"train": [], "val": [], "test": [0]}[split]
+        p["im_size"] = (1920, 1080)
 
     # HomebrewedDB (HB).
     # 'hbs' -- Subset of the HB dataset used in the BOP Challenge 2019/2020.

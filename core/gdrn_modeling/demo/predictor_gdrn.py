@@ -46,7 +46,8 @@ class GdrnPredictor():
                  config_file_path=osp.join(PROJ_ROOT,"configs/gdrn/lmo_pbr/convnext_a6_AugCosyAAEGray_BG05_mlL1_DMask_amodalClipBox_classAware_lmo.py"),
                  ckpt_file_path=osp.join(PROJ_ROOT,"output/gdrn/lmo_pbr/convnext_a6_AugCosyAAEGray_BG05_mlL1_DMask_amodalClipBox_classAware_lmo/model_final.pth"),
                  camera_json_path=osp.join(PROJ_ROOT,"datasets/BOP_DATASETS/lmo/camera.json"),
-                 path_to_obj_models=osp.join(PROJ_ROOT,"datasets/BOP_DATASETS/lmo/models")
+                 path_to_obj_models=osp.join(PROJ_ROOT,"datasets/BOP_DATASETS/lmo/models"),
+                 objs=None,
                  ):
 
         self.args = SimpleNamespace(config_file=config_file_path,
@@ -73,7 +74,7 @@ class GdrnPredictor():
         self.objs_dir = path_to_obj_models
 
         #set your trained object names
-        self.objs = {1:'class_name_1',
+        self.objs = objs if objs is not None else {1:'class_name_1',
                      2:'class_name_2'}
 
         self.cls_names = [i for i in self.objs.values()]

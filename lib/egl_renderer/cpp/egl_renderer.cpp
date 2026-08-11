@@ -1,3 +1,4 @@
+#include <iostream>
 //g++ egl.cpp -lpthread -ldl -lGL
 #include <stdio.h>
 

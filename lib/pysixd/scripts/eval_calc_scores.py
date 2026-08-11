@@ -156,7 +156,9 @@ for error_dir_path in p["error_dir_paths"]:
     error_sign = osp.basename(error_dir_path)
     err_type = str(error_sign.split("_")[0].split(":")[1])
     n_top = int(error_sign.split("_")[1].split(":")[1])
-    result_info = osp.basename(osp.dirname(error_dir_path)).split("_")
+    # split only on the first "_": dataset names may contain underscores too
+    # (e.g. "z_bracket"), which would otherwise get mistaken for extra fields.
+    result_info = osp.basename(osp.dirname(error_dir_path)).split("_", 1)
     method = result_info[0]
     dataset_info = result_info[1].split("-")
     dataset = dataset_info[0]

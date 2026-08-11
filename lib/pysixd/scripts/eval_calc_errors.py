@@ -147,8 +147,11 @@ for result_filename in p["result_filenames"]:
     time_start = time.perf_counter()
 
     # Parse info about the method and the dataset from the filename.
+    # NOTE: method_name is guaranteed underscore-free (converted to hyphens), but
+    # the dataset name itself may contain underscores (e.g. "z_bracket") -- split
+    # only on the first "_" so those don't get mistaken for extra fields.
     result_name = osp.splitext(osp.basename(result_filename))[0]
-    result_info = result_name.split("_")
+    result_info = result_name.split("_", 1)
     method = str(result_info[0])
     dataset_info = result_info[1].split("-")
     dataset = str(dataset_info[0])

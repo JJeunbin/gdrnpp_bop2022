@@ -1,22 +1,22 @@
 import pytest
+
 from pybind11_tests import copy_move_policies as m
 
 
 def test_lacking_copy_ctor():
     with pytest.raises(RuntimeError) as excinfo:
         m.lacking_copy_ctor.get_one()
-    assert "the object is non-copyable!" in str(excinfo.value)
+    assert "is non-copyable!" in str(excinfo.value)
 
 
 def test_lacking_move_ctor():
     with pytest.raises(RuntimeError) as excinfo:
         m.lacking_move_ctor.get_one()
-    assert "the object is neither movable nor copyable!" in str(excinfo.value)
+    assert "is neither movable nor copyable!" in str(excinfo.value)
 
 
 def test_move_and_copy_casts():
-    """Cast some values in C++ via custom type casters and count the number of
-    moves/copies."""
+    """Cast some values in C++ via custom type casters and count the number of moves/copies."""
 
     cstats = m.move_and_copy_cstats()
     c_m, c_mc, c_c = (
@@ -43,8 +43,8 @@ def test_move_and_copy_casts():
 
 
 def test_move_and_copy_loads():
-    """Call some functions that load arguments via custom type casters and
-    count the number of moves/copies."""
+    """Call some functions that load arguments via custom type casters and count the number of
+    moves/copies."""
 
     cstats = m.move_and_copy_cstats()
     c_m, c_mc, c_c = (
@@ -76,7 +76,7 @@ def test_move_and_copy_loads():
 
 @pytest.mark.skipif(not m.has_optional, reason="no <optional>")
 def test_move_and_copy_load_optional():
-    """Tests move/copy loads of std::optional arguments."""
+    """Tests move/copy loads of std::optional arguments"""
 
     cstats = m.move_and_copy_cstats()
     c_m, c_mc, c_c = (
@@ -107,11 +107,11 @@ def test_move_and_copy_load_optional():
 
 
 def test_private_op_new():
-    """An object with a private `operator new` cannot be returned by value."""
+    """An object with a private `operator new` cannot be returned by value"""
 
     with pytest.raises(RuntimeError) as excinfo:
         m.private_op_new_value()
-    assert "the object is neither movable nor copyable" in str(excinfo.value)
+    assert "is neither movable nor copyable" in str(excinfo.value)
 
     assert m.private_op_new_reference().value == 1
 
@@ -119,7 +119,14 @@ def test_private_op_new():
 def test_move_fallback():
     """#389: rvp::move should fall-through to copy on non-movable objects"""
 
-    m2 = m.get_moveissue2(2)
-    assert m2.value == 2
     m1 = m.get_moveissue1(1)
     assert m1.value == 1
+    m2 = m.get_moveissue2(2)
+    assert m2.value == 2
+
+
+def test_pytype_rvalue_cast():
+    """Make sure that cast from pytype rvalue to other pytype works"""
+
+    value = m.get_pytype_rvalue_castissue(1.0)
+    assert value == 1

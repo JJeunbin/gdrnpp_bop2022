@@ -152,6 +152,7 @@ def get_data_ref(dataset_name):
         "hb": "hb",
         "hbs": "hb_bop19",
         "itodd": "itodd",
+        "z_bracket": "z_bracket",
     }
     ref_key = ref_key_dict[dataset_name]
     return ref.__dict__[ref_key]
@@ -361,6 +362,7 @@ def load_and_print_val_scores_tab(
         "tyol": 15,
         "ycbv": 15,
         "ycbvposecnn": 15,
+        "z_bracket": 15,  # unused since we skip the "vsd" error type, just needs a key
     }
     ntop = cfg.VAL.N_TOP
     val_dataset_name = cfg.VAL.DATASET_NAME

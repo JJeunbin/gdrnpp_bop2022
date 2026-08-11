@@ -1,10 +1,8 @@
 import pytest
+
 from pybind11_tests import numpy_vectorize as m
 
-pytestmark = pytest.requires_numpy
-
-with pytest.suppress(ImportError):
-    import numpy as np
+np = pytest.importorskip("numpy")
 
 
 def test_vectorize(capture):
@@ -108,11 +106,7 @@ def test_vectorize(capture):
         """
         )
         with capture:
-            a, b, c = (
-                np.array([[1, 2, 3], [4, 5, 6]])[::, ::2],
-                np.array([[2], [3]]),
-                2,
-            )
+            a, b, c = np.array([[1, 2, 3], [4, 5, 6]])[::, ::2], np.array([[2], [3]]), 2
             assert np.allclose(f(a, b, c), a * b * c)
         assert (
             capture
@@ -144,16 +138,19 @@ def test_vectorize(capture):
 def test_type_selection():
     assert m.selective_func(np.array([1], dtype=np.int32)) == "Int branch taken."
     assert m.selective_func(np.array([1.0], dtype=np.float32)) == "Float branch taken."
-    assert m.selective_func(np.array([1.0j], dtype=np.complex64)) == "Complex float branch taken."
+    assert (
+        m.selective_func(np.array([1.0j], dtype=np.complex64))
+        == "Complex float branch taken."
+    )
 
 
 def test_docs(doc):
     assert (
         doc(m.vectorized_func)
         == """
-        vectorized_func(arg0: numpy.ndarray[int32], arg1: numpy.ndarray[float32], arg2: numpy.ndarray[float64]) -> object
+        vectorized_func(arg0: numpy.ndarray[numpy.int32], arg1: numpy.ndarray[numpy.float32], arg2: numpy.ndarray[numpy.float64]) -> object
     """
-    )  # noqa: E501 line too long
+    )
 
 
 def test_trivial_broadcasting():
@@ -161,14 +158,21 @@ def test_trivial_broadcasting():
 
     assert vectorized_is_trivial(1, 2, 3) == trivial.c_trivial
     assert vectorized_is_trivial(np.array(1), np.array(2), 3) == trivial.c_trivial
-    assert vectorized_is_trivial(np.array([1, 3]), np.array([2, 4]), 3) == trivial.c_trivial
-    assert trivial.c_trivial == vectorized_is_trivial(
-        np.array([[1, 3, 5], [7, 9, 11]]),
-        np.array([[2, 4, 6], [8, 10, 12]]),
-        3,
+    assert (
+        vectorized_is_trivial(np.array([1, 3]), np.array([2, 4]), 3)
+        == trivial.c_trivial
     )
-    assert vectorized_is_trivial(np.array([[1, 2, 3], [4, 5, 6]]), np.array([2, 3, 4]), 2) == trivial.non_trivial
-    assert vectorized_is_trivial(np.array([[1, 2, 3], [4, 5, 6]]), np.array([[2], [3]]), 2) == trivial.non_trivial
+    assert trivial.c_trivial == vectorized_is_trivial(
+        np.array([[1, 3, 5], [7, 9, 11]]), np.array([[2, 4, 6], [8, 10, 12]]), 3
+    )
+    assert (
+        vectorized_is_trivial(np.array([[1, 2, 3], [4, 5, 6]]), np.array([2, 3, 4]), 2)
+        == trivial.non_trivial
+    )
+    assert (
+        vectorized_is_trivial(np.array([[1, 2, 3], [4, 5, 6]]), np.array([[2], [3]]), 2)
+        == trivial.non_trivial
+    )
     z1 = np.array([[1, 2, 3, 4], [5, 6, 7, 8]], dtype="int32")
     z2 = np.array(z1, dtype="float32")
     z3 = np.array(z1, dtype="float64")
@@ -206,12 +210,12 @@ def test_passthrough_arguments(doc):
         + ", ".join(
             [
                 "arg0: float",
-                "arg1: numpy.ndarray[float64]",
-                "arg2: numpy.ndarray[float64]",
-                "arg3: numpy.ndarray[int32]",
+                "arg1: numpy.ndarray[numpy.float64]",
+                "arg2: numpy.ndarray[numpy.float64]",
+                "arg3: numpy.ndarray[numpy.int32]",
                 "arg4: int",
                 "arg5: m.numpy_vectorize.NonPODClass",
-                "arg6: numpy.ndarray[float64]",
+                "arg6: numpy.ndarray[numpy.float64]",
             ]
         )
         + ") -> object"
@@ -249,3 +253,14 @@ def test_array_collapse():
     z = m.vectorized_func(1, [[[2]]], 3)
     assert isinstance(z, np.ndarray)
     assert z.shape == (1, 1, 1)
+
+
+def test_vectorized_noreturn():
+    x = m.NonPODClass(0)
+    assert x.value == 0
+    m.add_to(x, [1, 2, 3, 4])
+    assert x.value == 10
+    m.add_to(x, 1)
+    assert x.value == 11
+    m.add_to(x, [[1, 1], [2, 3]])
+    assert x.value == 18
